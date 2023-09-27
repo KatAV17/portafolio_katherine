@@ -1,26 +1,45 @@
-function validarDatos(){
-    window.event.preventDefault()
-     
-    if (document.form.nombre.value=="" ) {
-        alert("Campo nombre es obligatorio")  
-        document.form.nombre.focus()
-    
-    }else if (document.form.email.value=="") {
-        alert("Campo e-mail es obligatorio")
-        document.form.email.focus() 
-
-    }else if (document.form.asunto.value=="" ) {
-        alert("Campo Asunto es obligatorio")
-        document.form.asunto.focus() 
-
-    }else if (document.form.mensaje.value=="" || document.form.mensaje.value.length <= 50 ){
-        alert("Campo Mensaje es obligatorio y debe contener máximo 50 carateres") 
-        document.form.mensaje.focus()
-      
-    } else if (document.form.email.value.indexOf('@')==-1 ||
-    document.form.email.value.indexOf('.')==-1 ) {
-        alert("e-mail inválido")
+export function valida(input) {
+    const tipoDeInput = input.dataset.tipo;
+    if (validadores[tipoDeInput]) {
+        validadores[tipoDeInput](input);
     }
-   
+
+    if (input.validity.valid) {
+        input.parentElement.classList.remove("form--invalid");
+    } else {
+        input.parentElement.classList.add("form--invalid");
+    }
 }
-    document.querySelector('form').addEventListener('submit',validarDatos)
+
+const tipoDeErrores = [
+    "valueMissing",
+    "typeMismatch",
+    "patternMismatch",
+    "customError",
+]
+
+const mensajesDeError = {
+    nombre: {
+        valueMissing: "Este espacio no puede estar vacío."
+    },
+    email: {
+        valueMissing: "Este espacio no puede estar vacío.",
+        typeMismatch: "El correo no es válido.",
+    },
+    asunto: {
+        valueMissing: "Este espacio no puede estar vacío."
+    },
+    mensaje: {
+        valueMissing: "Este espacio no puede estar vacío."
+    },
+};
+
+function mostrarMensajeDeError(tipoDeInput, input) {
+    let mensaje = ""
+    tipoDeErrores.forEach( error => {
+        if (input.validity[error]) {
+            mensaje = mensajesDeError[tipoDeInput][error];
+        }
+    })
+    return mensaje
+}
